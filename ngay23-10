@@ -1,0 +1,453 @@
+-- Active: 1697992364772@@127.0.0.1@3306@qlnv
+CREATE DATABASE qlnv;
+use qlnv;
+CREATE TABLE Nhanvien (
+    MaNV VARCHAR(4),
+    HoNV VARCHAR(8),
+    Tenlot VARCHAR(8),
+    TenNV VARCHAR(8),
+    Ngsinh DATE,
+    Dchi VARCHAR(30),
+    Phai VARCHAR(3),
+    Luong INTEGER,
+    PHG VARCHAR(2)
+);
+
+CREATE TABLE Phongban(
+    MaPHG VARCHAR(2),
+    TenPHG VARCHAR(10),
+    TrPHG VARCHAR(4),
+    Ng_Nhanchuc DATE
+);
+
+CREATE TABLE Diadiem(
+    MaPHG VARCHAR(2),
+    Diadiem VARCHAR(10)
+);
+
+CREATE TABLE Dean(
+    MaDA VARCHAR(3),
+    TenDA VARCHAR(20),
+    DDiem_DA VARCHAR(10),
+    Phong VARCHAR(2)
+);
+
+CREATE TABLE Phancong(
+    MaNV VARCHAR(4),
+    MaDA VARCHAR(3),
+    Thoigian FLOAT
+);
+
+CREATE TABLE Thannhan(
+    MaNV VARCHAR(4),
+    TenTN VARCHAR(8),
+    Phai VARCHAR(3),
+    Ngsinh DATE,
+    Quanhe VARCHAR(7)
+);
+
+insert into Nhanvien values
+('NV01','Dinh','Ba','Tien','1965/01/09','731 Tran Hung Dao, Q5, TPHCM','Nam',30000,'P3'),
+('NV02','Vo','Thanh','Tung','1955/12/08','638 Tran Hung Dao, Q1, TPHCM','Nam',40000,'P3' ),
+('NV03','Tran','Thanh','Tam','1972/07/31','853 Mai Thi Luu, Q1, TPHCM','Nam',25000,'P2'),
+('NV04','Vo','Manh','Hung','1962/09/15','975 Thong Nhat, Ba Ria VUng Tau','Nam',38000,'P2'),
+('NV05','Le','Ngoc','Quyen','1977/10/10','450 Trung Vuong, Ha Noi','Nu',55000,'P1'),
+('NV06','Tran','Minh','Khang','1962/06/24','23 Tran Binh Trong, Q5, TPHCM','Nam',58000,'P1'),
+('NV07','Le','Thi','Nhan','1961/06/20','291 Ho Van Hue, QPN, TPHCM','Nu',43000,'P3'),
+('NV08','Tran','Hong','Quang','1979/03/29','980 Le Hong Phong,Q10, TPHCM','Nam',25000,'P2'),
+('NV09','Bui','Thuy','Vu','1958/07/19','332 Nguyen Thai Hoc, Q1, TPHCM','Nu',25000,'P1');
+
+insert into Phongban values
+('P1','Quan Ly','NV05','2001/06/19'),
+('P2','Dieu Hanh','NV08','1985/01/01'),
+('P3','Nghien Cuu','NV02','1998/05/22');
+
+insert into Diadiem values
+('P1','TPHCM'),
+('P2','Ha Noi'),
+('P3','Nha Trang'),
+('P3','TPHCM'),
+('P3','Vung Tau');
+
+insert into Dean values
+('DA1','San pham X','Vung Tau','P3'),
+('DA2','San pham Y','Nha Trang','P3'),
+('DA3','San pham Z','TPHCM','P3'),
+('DA4','Tin hoc hoa','Ha Noi','P2'),
+('DA5','Cap quang','TPHCM','P1'),
+('DA6','Dao tao','Ha Noi','P2');
+
+insert into Phancong values
+('NV01','DA1',32.5),
+('NV01','DA2',7.5),
+('NV01','DA3',10),
+('NV02','DA3',40),
+('NV02','DA4',20),
+('NV02','DA5',20),
+('NV03','DA1',20),
+('NV03','DA2',20), 
+('NV04','DA3',10),
+('NV05','DA4',10),
+('NV05','DA5',10),
+('NV07','DA6',30),
+('NV08','DA4',10),
+('NV08','DA6',20),
+('NV09','DA4',15),
+('NV09','DA6',35); 
+
+insert into Thannhan values
+('NV01','Chau','Nu','1978/12/31','Con gai'),
+('NV01','Duy','Nam','1928/01/01','Cha me'),
+('NV01','Phuong','Nu','1957/05/05','Vo chong'),
+('NV02','Duong','Nu','1948/05/03','Vo chong'),
+('NV02','Khang','Nam','1973/10/25','Con trai'),
+('NV02','Quang','Nu','1976/04/05','Con gai'),
+('NV07','Dang','Nam','1932/02/29','Vo chong');
+
+ALTER TABLE NHANVIEN
+ADD CONSTRAINT PK_MaNV PRIMARY KEY (MaNV);
+
+ALTER TABLE Phongban
+ADD CONSTRAINT PK_MaPHG PRIMARY KEY (MaPHG);
+
+ALTER TABLE Dean
+ADD CONSTRAINT PK_MaDA PRIMARY KEY (MaDA);
+
+ALTER TABLE Nhanvien
+ADD CONSTRAINT FK_PHG
+FOREIGN KEY (PHG) REFERENCES Phongban(MaPHG);
+
+ALTER TABLE Phongban
+ADD CONSTRAINT FK_TrPHG
+FOREIGN KEY (TrPHG) REFERENCES Nhanvien(MaNV);
+
+ALTER TABLE Diadiem
+ADD CONSTRAINT FK_MaPHG
+FOREIGN KEY (MaPHG) REFERENCES Phongban(MaPHG);
+
+ALTER TABLE Dean
+ADD CONSTRAINT FK_Phong
+FOREIGN KEY (Phong) REFERENCES Phongban(MaPHG);
+
+ALTER TABLE Phancong
+ADD CONSTRAINT FK_MaNV
+FOREIGN KEY (MaNV) REFERENCES Nhanvien(MaNV);
+
+ALTER TABLE Phancong
+ADD CONSTRAINT FK_MaDA
+FOREIGN KEY (MaDA) REFERENCES Dean(MaDA);
+
+ALTER TABLE Thannhan
+ADD CONSTRAINT FK_nhanvien --ko duoc dat trung ten
+FOREIGN KEY (MaNV) REFERENCES Nhanvien(MaNV);
+
+--bai tap
+--bai 1
+SELECT TenNV,Ngsinh,DDiem_DA
+FROM nhanvien 
+    INNER JOIN phancong 
+    on nhanvien.MaNV=phancong.MaNV
+    INNER JOIN dean
+    on phancong.MaDA=dean.MaDA
+WHERE DDiem_DA='tphcm' and year(now())-year(ngsinh)>=30;
+--bai 2
+SELECT COUNT(MaDA)
+FROM dean
+WHERE DDiem_DA='tphcm';
+--bai 3
+SELECT TenPHG, diadiem.diadiem, TenDA, DDiem_DA
+FROM phongban
+    INNER JOIN diadiem
+    on phongban.MaPHG=diadiem.MaPHG
+    INNER JOIN dean
+    ON diadiem.MaPHG=dean.Phong
+WHERE diadiem.Diadiem=dean.DDiem_DA;
+--bai4
+SELECT TenNV,TenPHG
+FROM nhanvien INNER JOIN phongban ON MaNV=TrPHG
+WHERE phai='nu';
+--bai 5
+SELECT TenDA, diadiem
+FROM phongban
+    INNER JOIN diadiem
+    ON phongban.MaPHG=diadiem.MaPHG
+    INNER JOIN dean
+    ON diadiem.MaPHG=dean.Phong
+WHERE diadiem='ha noi';
+--bai 6
+SELECT *
+FROM nhanvien
+INNER JOIN thannhan ON nhanvien.MaNV=thannhan.MaNV
+WHERE Quanhe="vo chong"
+AND nhanvien.MaNV NOT IN(
+    SELECT MaNV
+    FROM thannhan
+    WHERE Quanhe LIKE "con%"
+); 
+--bai 7
+SELECT TenNV,tenTN
+FROM nhanvien LEFT JOIN thannhan ON nhanvien.MaNV=thannhan.MaNV;
+--bai8
+SELECT nhanvien.MaNV, TenNV
+FROM nhanvien LEFT JOIN thannhan ON nhanvien.MaNV=thannhan.MaNV
+WHERE thannhan.MaNV IS NULL; 
+--bai 9
+SELECT TenPHG,count(MaNV)
+FROM nhanvien INNER JOIN phongban ON PHG=MaPHG
+GROUP BY TenPHG;
+--bai10
+SELECT TenDA,TenNV,Thoigian
+FROM nhanvien
+    INNER JOIN phancong ON nhanvien.MaNV=phancong.MaNV 
+    INNER JOIN dean ON phancong.MaDA=dean.MaDA
+WHERE Thoigian=
+    (
+        SELECT MAX(thoigian)
+        FROM phancong AS pc
+        WHERE phancong.MaDA=pc.MaDA
+    );
+
+--bai tap
+--1. Cho biết tên, tuổi của từng nhân viên. 
+SELECT honv, tenlot, tennv, YEAR(now())-YEAR(ngsinh)
+FROM nhanvien;
+
+--2. Cho biết thông tin về những người có phái là nam và ñịa chỉ trên ñường “Tran Hung Dao”.
+SELECT tennv, phai, dchi
+FROM nhanvien
+WHERE phai="nam" and dchi LIKE"%Tran Hung Dao%";
+
+--3. Cho biết những người có họ là “Le” và tên bắt ñầu bằng ký tự “N”
+SELECT honv, tennv
+FROM nhanvien
+WHERE honv="Le" and tennv LIKE "N%";
+
+--4. Cho biết những người có ngày sinh trong tháng 7 năm 1958. 
+SELECT tennv, ngsinh
+FROM nhanvien
+WHERE MONTH(ngsinh)=7 and YEAR(ngsinh)=1958;
+
+--5. Cho biết những người có ngày sinh trong quý 3.
+SELECT tennv, ngsinh
+FROM nhanvien
+WHERE MONTH(ngsinh) IN(7,8,9);
+
+--6. Cho biết số ñề án ñược phân công của từng nhân viên (gồm mã số, tên, số lượng ñề án ñược phân công)
+SELECT nhanvien.manv, tennv, count(mada)
+FROM nhanvien 
+    INNER JOIN phancong ON nhanvien.manv=phancong.manv
+GROUP BY nhanvien.manv;
+
+--7. Cho biết tên nhân viên có từ 2 thân nhân trở lên.
+SELECT tennv, count(nv.manv) AS sl_thannhan
+FROM nhanvien AS nv
+    INNER JOIN thannhan AS tn ON nv.manv=tn.manv
+GROUP BY nv.manv, tennv
+HAVING count(nv.manv)>=2;
+
+--8. Tên nhân viên >=30 tuổi ñược phân công làm việc cho ñề án ở TPHCM
+--C1:
+SELECT tennv, DDiem_DA, YEAR(now())-YEAR(ngsinh) AS tuoi
+FROM nhanvien AS nv
+    INNER JOIN phancong AS pc ON nv.manv=pc.manv
+    INNER JOIN dean ON pc.mada=dean.mada
+WHERE ddiem_da="tphcm" and YEAR(now())-YEAR(ngsinh);
+
+--C2:
+SELECT tennv, da.ddiem_da, YEAR(now())-YEAR(ngsinh) AS tuoi
+FROM phancong AS pc
+    INNER JOIN(
+        SELECT mada, ddiem_da
+        FROM dean
+        WHERE ddiem_da="tphcm"
+    ) AS da ON pc.mada=da.mada
+    INNER JOIN nhanvien AS nv ON pc.manv=nv.manv
+WHERE YEAR(now())-YEAR(ngsinh)>=30;
+
+--9. Cho biết có bao nhiêu ñề án ở TPHCM
+SELECT ddiem_da, count(MaDA) AS sl_da
+FROM dean
+GROUP BY ddiem_da
+HAVING ddiem_da="tphcm";
+
+--10. ðối với mỗi thành phố, cho biết tên tp và số lượng ñề án ñược thực hiện ở thành phố ñó.
+SELECT ddiem_da, count(mada) AS sl_da
+FROM dean
+GROUP BY ddiem_da;
+
+--11. Cho biết số năm thâm niên (số năm làm trưởng phòng) của từng trưởng phòng. 
+SELECT tennv, tenphg, YEAR(now())-YEAR(ng_nhanchuc) AS thamnien
+FROM phongban 
+    INNER JOIN nhanvien ON trphg=manv;
+
+--12. Cho biết số lượng ñịa ñiểm của từng phòng ban. 
+SELECT tenphg, count(diadiem) AS sl_diadiem
+FROM phongban 
+    INNER JOIN diadiem ON phongban.maphg=diadiem.maphg
+GROUP BY diadiem.maphg;
+
+--13. Cho biết có bao nhiêu tên ñề án là “sản phẩm”. 
+SELECT count(tenda) AS da_sanpham
+FROM dean
+WHERE tenda LIKE "San pham%";
+
+--14. Cho biết tên phòng, ñịa ñiểm phòng, tên ñề án, ñịa ñiểm ñề án của những ñề án có ñịa ñiểm của ñề án trùng với ñịa ñiểm của phòng
+SELECT tenphg, diadiem, tenda, ddiem_da
+FROM phongban AS pb
+    INNER JOIN diadiem ON pb.maphg=diadiem.maphg
+    INNER JOIN dean ON pb.maphg= phong
+WHERE ddiem_da=diadiem;
+
+--15. Tên các nhân viên quản lý có mức lương thấp hơn lương trung bình nhân viên họ quản lý trực tiếp
+--16. Xóa các nhân viên có số thân nhân >=3. 
+DELETE 
+FROM nhanvien
+WHERE manv IN (
+    SELECT manv
+    FROM nhanvien AS nv
+        INNER JOIN thannhan AS tn ON nv.manv=tn.mamv
+    GROUP BY nv.manv
+    HAVING count(nv.manv)>=3
+);
+
+
+-------------------------------------------------------------------
+--QUAN LI SINH VIEN
+/*
+CREATE DATABASE qlsv;
+use qlsv;
+CREATE TABLE SinhVien(
+    MaSV VARCHAR(5),
+    Ten VARCHAR(20),
+    PhaiNu BOOLEAN,
+    DiaChi VARCHAR(30),
+    DienThoai VARCHAR(10),
+    MaKhoa VARCHAR(4)
+);
+
+CREATE TABLE Khoa(
+    MaKhoa VARCHAR(4),
+    TenKhoa VARCHAR(20),
+    SL_CBGD INTEGER
+);
+
+CREATE TABLE GiaoVien(
+    MaGV VARCHAR(4),
+    TenGV VARCHAR(20),
+    MaKhoa VARCHAR(4)
+);
+
+CREATE TABLE MonHoc(
+    MaMH VARCHAR(4),
+    TenMH VARCHAR(20),
+    SoTC BIT
+);
+
+CREATE TABLE GiangDay(
+    MaKhoaHoc VARCHAR(2),
+    MaGV VARCHAR(4),
+    MaMH VARCHAR(4),
+    HocKi BIT,
+    Nam VARCHAR(4)
+);
+
+CREATE TABLE KetQua(
+    MaSV VARCHAR(5),
+    MaKhoaHoc VARCHAR(4),
+    Diem BIT
+);
+
+insert into SinhVien values
+('SV001','Bui Thuy An','Yes','273 An Duong Vuong, Q5, TPHCM','0908123456','CNTT'),
+('SV002','Nguyen Thanh Tung','No','227 Nguyen Van Cu, Q5, TPHCM','0913666789','CNTT'),
+('SV003','Nguyen Thanh Long','No','54 Cao Thang, Ba Dinh, Ha Noi','0909009009','TOAN'),
+('SV004','Hoang Thi Hoa','Yes','23 Le Hong Phong, Vung Tau','0982345678','CNTT'),
+('SV005','Tran Hong Son','No','27 Hoang Van Thu, Can Tho','0918345678','TOAN'); 
+
+insert into Khoa values
+('CNTT','Công Nghệ Thông Tin',15),
+('TOAN','Toán',20),
+('SINH','Sinh học',7);
+
+insert into GiaoVien values
+('GV01','Pham Thi Thao','CNTT'),
+('GV02','Lam Hoang Vu','TOAN'),
+('GV03','Tran Van Tien','CNTT'),
+('GV04','Hoang Vuong','CNTT');
+
+insert into MonHoc values
+('CSDL','Co So Du Lieu',3),
+('CTDL','Cau Truc Du Lieu',6),
+('KTLT','Ky Thuat Lap Trinh',5),
+('CWIN','Lap Trinh C Tren Window',4);
+
+insert into KetQua values
+('SV001','K1',8.5),
+('SV002','K3',7.0),
+('SV003','K4',7.5),
+('SV001','K2',9.0),
+('SV004','K3',6.0), 
+('SV005','K3',7.0),
+('SV002','K1',7.0),
+('SV003','K2',8.5),
+('SV005','K5',7.0),
+('SV004','K4',2.0);
+
+insert into GiangDay values
+('K1','GV01','CSDL',1,'2001'),
+('K2','GV04','KTLT',2,'2001'),
+('K3','GV03','CTDL',1,'2002'),
+('K4','GV04','CWIN',1,'2002'),
+('K5','GV01','CSDL',1,'2002');
+
+ALTER TABLE SinhVien
+ADD CONSTRAINT PK_MaSV PRIMARY KEY (MaSV);
+
+ALTER TABLE Khoa
+ADD CONSTRAINT PK_MaKhoa PRIMARY KEY (MaKhoa);
+
+ALTER TABLE GiaoVien
+ADD CONSTRAINT PK_MaGV PRIMARY KEY (MaGV);
+
+ALTER TABLE GiangDay
+ADD CONSTRAINT PK_MaKhoaHoc PRIMARY KEY (MaKhoaHoc);
+
+ALTER TABLE MonHoc
+ADD CONSTRAINT PK_MaMH PRIMARY KEY (MaMH);
+
+ALTER TABLE SinhVien
+ADD CONSTRAINT FK_MaKhoa
+FOREIGN KEY (MaKhoa) REFERENCES Khoa (MaKhoa);
+
+ALTER TABLE KetQua
+ADD CONSTRAINT FK_MaSV
+FOREIGN KEY (MaSV) REFERENCES SinhVien (MaSV);
+
+ALTER TABLE KetQua
+ADD CONSTRAINT FK_MaKhoaHoc
+FOREIGN KEY (MaKhoaHoc) REFERENCES GiangDay (MaKhoaHoc);
+
+ALTER TABLE GiaoVien
+ADD CONSTRAINT FK_Khoa
+FOREIGN KEY (MaKhoa) REFERENCES Khoa (MaKhoa);
+
+ALTER TABLE GiangDay
+ADD CONSTRAINT FK_MaGV
+FOREIGN KEY (MaGV) REFERENCES GiaoVien (MaGV);
+
+ALTER TABLE GiangDay
+ADD CONSTRAINT FK_MaMH
+FOREIGN KEY (MaMH) REFERENCES MonHoc (MaMH);
+
+
+SELECT `MaPHG`,`TenPHG`,`TrPHG`,`Ng_Nhanchuc` FROM phongban;
+
+SELECT `MaPHG`,`TenPHG`,`TrPHG`,`Ng_Nhanchuc` FROM phongban;
+
+SELECT `MaPHG`,`TenPHG`,`TrPHG`,`Ng_Nhanchuc` FROM phongban;
+
+SELECT `MaPHG`,`TenPHG`,`TrPHG`,`Ng_Nhanchuc` FROM phongban;
+
+SELECT `MaPHG`,`TenPHG`,`TrPHG`,`Ng_Nhanchuc` FROM phongban;
+*/
+
