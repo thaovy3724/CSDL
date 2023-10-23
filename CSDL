@@ -1,0 +1,142 @@
+-- Active: 1697992364772@@127.0.0.1@3306@test
+CREATE DATABASE qlnv;
+use qlnv;
+CREATE TABLE Nhanvien (
+    MaNV VARCHAR(4),
+    HoNV VARCHAR(8),
+    Tenlot VARCHAR(8),
+    TenNV VARCHAR(8),
+    Ngsinh DATE,
+    Dchi VARCHAR(30),
+    Phai VARCHAR(3),
+    Luong INTEGER,
+    PHG VARCHAR(2)
+);
+
+CREATE TABLE Phongban(
+    MaPHG VARCHAR(2),
+    TenPHG VARCHAR(10),
+    TrPHG VARCHAR(4),
+    Ng_Nhanchuc DATE
+);
+
+CREATE TABLE Diadiem(
+    MaPHG VARCHAR(2),
+    Diadiem VARCHAR(10)
+);
+
+CREATE TABLE Dean(
+    MaDA VARCHAR(3),
+    TenDA VARCHAR(20),
+    DDiem_DA VARCHAR(10),
+    Phong VARCHAR(2)
+);
+
+CREATE TABLE Phancong(
+    MaNV VARCHAR(4),
+    MaDA VARCHAR(3),
+    Thoigian FLOAT
+);
+
+CREATE TABLE Thannhan(
+    MaNV VARCHAR(4),
+    TenTN VARCHAR(8),
+    Phai VARCHAR(3),
+    Ngsinh DATE,
+    Quanhe VARCHAR(7)
+);
+
+insert into Nhanvien values
+('NV01','Dinh','Ba','Tien','1965/01/09','731 Tran Hung Dao, Q5, TPHCM','Nam',30000,'P3'),
+('NV02','Vo','Thanh','Tung','1955/12/08','638 Tran Hung Dao, Q1, TPHCM','Nam',40000,'P3' ),
+('NV03','Tran','Thanh','Tam','1972/07/31','853 Mai Thi Luu, Q1, TPHCM','Nam',25000,'P2'),
+('NV04','Vo','Manh','Hung','1962/09/15','975 Thong Nhat, Ba Ria VUng Tau','Nam',38000,'P2'),
+('NV05','Le','Ngoc','Quyen','1977/10/10','450 Trung Vuong, Ha Noi','Nu',55000,'P1'),
+('NV06','Tran','Minh','Khang','1962/06/24','23 Tran Binh Trong, Q5, TPHCM','Nam',58000,'P1'),
+('NV07','Le','Thi','Nhan','1961/06/20','291 Ho Van Hue, QPN, TPHCM','Nu',43000,'P3'),
+('NV08','Tran','Hong','Quang','1979/03/29','980 Le Hong Phong,Q10, TPHCM','Nam',25000,'P2'),
+('NV09','Bui','Thuy','Vu','1958/07/19','332 Nguyen Thai Hoc, Q1, TPHCM','Nu',25000,'P1');
+
+insert into Phongban values
+('P1','Quan Ly','NV05','2001/06/19'),
+('P2','Dieu Hanh','NV08','1985/01/01'),
+('P3','Nghien Cuu','NV02','1998/05/22');
+
+insert into Diadiem values
+('P1','TPHCM'),
+('P2','Ha Noi'),
+('P3','Nha Trang'),
+('P3','TPHCM'),
+('P3','Vung Tau');
+
+insert into Dean values
+('DA1','San pham X','Vung Tau','P3'),
+('DA2','San pham Y','Nha Trang','P3'),
+('DA3','San pham Z','TPHCM','P3'),
+('DA4','Tin hoc hoa','Ha Noi','P2'),
+('DA5','Cap quang','TPHCM','P1'),
+('DA6','Dao tao','Ha Noi','P2');
+
+insert into Phancong values
+('NV01','DA1',32.5),
+('NV01','DA2',7.5),
+('NV01','DA3',10),
+('NV02','DA3',40),
+('NV02','DA4',20),
+('NV02','DA5',20),
+('NV03','DA1',20),
+('NV03','DA2',20), 
+('NV04','DA3',10),
+('NV05','DA4',10),
+('NV05','DA5',10),
+('NV07','DA6',30),
+('NV08','DA4',10),
+('NV08','DA6',20),
+('NV09','DA4',15),
+('NV09','DA6',35); 
+
+insert into Thannhan values
+('NV01','Chau','Nu','1978/12/31','Con gai'),
+('NV01','Duy','Nam','1928/01/01','Cha me'),
+('NV01','Phuong','Nu','1957/05/05','Vo chong'),
+('NV02','Duong','Nu','1948/05/03','Vo chong'),
+('NV02','Khang','Nam','1973/10/25','Con trai'),
+('NV02','Quang','Nu','1976/04/05','Con gai'),
+('NV07','Dang','Nam','1932/02/29','Vo chong');
+
+ALTER TABLE NHANVIEN
+ADD CONSTRAINT PK_MaNV PRIMARY KEY (MaNV);
+
+ALTER TABLE Phongban
+ADD CONSTRAINT PK_MaPHG PRIMARY KEY (MaPHG);
+
+ALTER TABLE Dean
+ADD CONSTRAINT PK_MaDA PRIMARY KEY (MaDA);
+
+ALTER TABLE Nhanvien
+ADD CONSTRAINT FK_PHG
+FOREIGN KEY (PHG) REFERENCES Phongban(MaPHG);
+
+ALTER TABLE Phongban
+ADD CONSTRAINT FK_TrPHG
+FOREIGN KEY (TrPHG) REFERENCES Nhanvien(MaNV);
+
+ALTER TABLE Diadiem
+ADD CONSTRAINT FK_MaPHG
+FOREIGN KEY (MaPHG) REFERENCES Phongban(MaPHG);
+
+ALTER TABLE Dean
+ADD CONSTRAINT FK_Phong
+FOREIGN KEY (Phong) REFERENCES Phongban(MaPHG);
+
+ALTER TABLE Phancong
+ADD CONSTRAINT FK_MaNV
+FOREIGN KEY (MaNV) REFERENCES Nhanvien(MaNV);
+
+ALTER TABLE Phancong
+ADD CONSTRAINT FK_MaDA
+FOREIGN KEY (MaDA) REFERENCES Deam(MaDA);
+
+ALTER TABLE Thannhan
+ADD CONSTRAINT FK_nhanvien --ko duoc dat trung ten
+FOREIGN KEY (MaNV) REFERENCES Nhanvien(MaNV);
